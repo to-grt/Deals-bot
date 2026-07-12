@@ -10,8 +10,11 @@ database: data/deals.db
 scrapers:
   dealabs:
     enabled: true
-    # Flux RSS du groupe informatique de Dealabs
-    feed_url: "https://www.dealabs.com/rss/groupe/informatique"
+    feed_urls:
+      # Groupe dédié aux PC fixes / configs complètes (source principale)
+      - "https://www.dealabs.com/rss/groupe/ordinateurs-de-bureau"
+      # Groupe informatique généraliste (filet de sécurité)
+      - "https://www.dealabs.com/rss/groupe/informatique"
 
 # Canaux de notification. Les ${VAR} sont lues dans les variables
 # d'environnement pour ne pas versionner de secrets.
@@ -43,32 +46,18 @@ watches:
       - "desktop"
       - "tour gamer"
       - "pc tour"
+    # Seules exclusions : les formats qui ne sont pas des tours.
+    # Ne PAS exclure des noms de composants (watercooling, carte graphique…) :
+    # les titres de PC montés énumèrent leurs composants, on rejetterait des
+    # deals valides. Les composants vendus seuls ne matchent de toute façon
+    # aucun mot-clé ci-dessus.
     exclude:
-      # pas un PC fixe
       - "portable"
       - "laptop"
       - "notebook"
+      - "chromebook"
       - "mini pc"
-      # périphériques et composants vendus seuls
-      - "écran"
-      - "ecran"
-      - "moniteur"
-      - "clavier"
-      - "souris"
-      - "boîtier"
-      - "boitier"
-      - "alimentation"
-      - "processeur"
-      - "carte graphique"
-      - "carte mère"
-      - "carte mere"
-      - "ventirad"
-      - "watercooling"
-      - "casque"
-      - "manette"
-      - "webcam"
-      - "imprimante"
-      - "chaise"
-      - "bureau assis"
-      - "tapis"
+      - "mini-pc"
+      - "all-in-one"
+      - "tout-en-un"
     max_price: null   # budget illimité pour l'instant

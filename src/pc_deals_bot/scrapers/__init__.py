@@ -10,6 +10,9 @@ def build_scrapers(scrapers_config: dict) -> list[BaseScraper]:
 
     dealabs_cfg = scrapers_config.get("dealabs", {})
     if dealabs_cfg.get("enabled"):
-        scrapers.append(DealabsScraper(feed_url=dealabs_cfg["feed_url"]))
+        # feed_urls (liste) ou feed_url (simple) : un scraper par flux,
+        # le dédoublonnage par id gère les deals présents dans plusieurs flux
+        urls = dealabs_cfg.get("feed_urls") or [dealabs_cfg["feed_url"]]
+        scrapers.extend(DealabsScraper(feed_url=url) for url in urls)
 
     return scrapers
