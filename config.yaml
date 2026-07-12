@@ -28,9 +28,20 @@ notifiers:
 
 watches:
   - name: "Config complète"
-    keywords: ["pc fixe", "pc gamer", "tour", "unité centrale", "desktop"]
+    keywords:
+      - "pc fixe"
+      - "pc gamer"
+      - "pc gaming"
+      - "gaming pc"
+      - "pc complet"
+      - "pc de bureau"
+      - "pc bureau"
+      - "unité centrale"
+      - "desktop"
+      - "tour gamer"
+      - "pc tour"
     exclude: ["portable", "laptop", "notebook", "mini pc"]
-    max_price: 1200
+    max_price: null   # budget illimité pour l'instant
 
   - name: "Carte graphique"
     keywords: ["rtx 4070", "rtx 4080", "rtx 5070", "rx 7800", "rx 7900", "rx 9070"]
