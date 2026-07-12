@@ -1,0 +1,35 @@
+# Configuration du bot de veille des bons plans PC.
+#
+# Chaque entrée de "watches" est une recherche indépendante :
+#   - keywords : au moins un de ces mots doit apparaître dans le titre
+#   - exclude  : aucun de ces mots ne doit apparaître (filtre les portables, etc.)
+#   - max_price : prix maximum en euros (null = pas de limite)
+
+database: data/deals.db
+
+scrapers:
+  dealabs:
+    enabled: true
+    # Flux RSS du groupe informatique de Dealabs
+    feed_url: "https://www.dealabs.com/rss/groupe/informatique"
+
+watches:
+  - name: "Config complète"
+    keywords: ["pc fixe", "pc gamer", "tour", "unité centrale", "desktop"]
+    exclude: ["portable", "laptop", "notebook", "mini pc"]
+    max_price: 1200
+
+  - name: "Carte graphique"
+    keywords: ["rtx 4070", "rtx 4080", "rtx 5070", "rx 7800", "rx 7900", "rx 9070"]
+    exclude: ["portable", "laptop"]
+    max_price: 600
+
+  - name: "Processeur"
+    keywords: ["ryzen 7", "ryzen 9", "core i7", "core i9", "7800x3d", "9800x3d"]
+    exclude: ["portable", "laptop"]
+    max_price: 400
+
+  - name: "SSD / RAM"
+    keywords: ["ssd 2 to", "ssd 2tb", "nvme", "ddr5 32"]
+    exclude: []
+    max_price: 150
