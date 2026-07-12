@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -20,12 +21,28 @@ class Watch:
 class Config:
     database: Path
     scrapers: dict
+    notifiers: dict
     watches: list[Watch]
+
+
+def _expand_env(value):
+    """Remplace récursivement les ${VAR} par les variables d'environnement.
+
+    Permet de garder les secrets (webhook Discord, token Telegram) hors du
+    fichier de config versionné.
+    """
+    if isinstance(value, str):
+        return os.path.expandvars(value)
+    if isinstance(value, dict):
+        return {k: _expand_env(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_expand_env(v) for v in value]
+    return value
 
 
 def load_config(path: str | Path = "config.yaml") -> Config:
     path = Path(path)
-    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    raw = _expand_env(yaml.safe_load(path.read_text(encoding="utf-8")))
 
     watches = [
         Watch(
@@ -43,5 +60,6 @@ def load_config(path: str | Path = "config.yaml") -> Config:
     return Config(
         database=database,
         scrapers=raw.get("scrapers", {}),
+        notifiers=raw.get("notifiers", {}),
         watches=watches,
     )

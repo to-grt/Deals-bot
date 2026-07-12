@@ -13,6 +13,19 @@ scrapers:
     # Flux RSS du groupe informatique de Dealabs
     feed_url: "https://www.dealabs.com/rss/groupe/informatique"
 
+# Canaux de notification. Les ${VAR} sont lues dans les variables
+# d'environnement pour ne pas versionner de secrets.
+notifiers:
+  console:
+    enabled: true
+  discord:
+    enabled: false
+    webhook_url: "${DISCORD_WEBHOOK_URL}"
+  telegram:
+    enabled: false
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+
 watches:
   - name: "Config complète"
     keywords: ["pc fixe", "pc gamer", "tour", "unité centrale", "desktop"]

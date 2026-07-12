@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .config import load_config
 from .filters import find_matching_watch
-from .notifier import ConsoleNotifier
+from .notifier import build_notifiers
 from .scrapers import build_scrapers
 from .storage import DealStore
 
@@ -18,7 +18,7 @@ def run_once(config_path: Path) -> int:
     """Un passage complet : scrape, filtre, notifie. Renvoie le nb de nouveaux deals."""
     config = load_config(config_path)
     store = DealStore(config.database)
-    notifier = ConsoleNotifier()
+    notifiers = build_notifiers(config.notifiers)
     new_matches = 0
 
     try:
@@ -39,8 +39,14 @@ def run_once(config_path: Path) -> int:
                 store.save(deal, matched_watch=watch.name if watch else None)
 
                 if watch:
-                    notifier.notify(deal, watch.name)
                     new_matches += 1
+                    for notifier in notifiers:
+                        try:
+                            notifier.notify(deal, watch.name)
+                        except Exception:
+                            log.exception(
+                                "Échec de la notification %s", notifier.name
+                            )
     finally:
         store.close()
 
