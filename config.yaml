@@ -26,6 +26,9 @@ notifiers:
     bot_token: "${TELEGRAM_BOT_TOKEN}"
     chat_id: "${TELEGRAM_CHAT_ID}"
 
+# NB : la correspondance se fait par sous-chaîne dans le titre.
+# Ne jamais mettre un mot-clé trop court/générique comme "pc" seul,
+# sinon "Écran PC", "Boîtier PC", etc. matchent aussi.
 watches:
   - name: "Config complète"
     keywords:
@@ -40,20 +43,32 @@ watches:
       - "desktop"
       - "tour gamer"
       - "pc tour"
-    exclude: ["portable", "laptop", "notebook", "mini pc"]
+    exclude:
+      # pas un PC fixe
+      - "portable"
+      - "laptop"
+      - "notebook"
+      - "mini pc"
+      # périphériques et composants vendus seuls
+      - "écran"
+      - "ecran"
+      - "moniteur"
+      - "clavier"
+      - "souris"
+      - "boîtier"
+      - "boitier"
+      - "alimentation"
+      - "processeur"
+      - "carte graphique"
+      - "carte mère"
+      - "carte mere"
+      - "ventirad"
+      - "watercooling"
+      - "casque"
+      - "manette"
+      - "webcam"
+      - "imprimante"
+      - "chaise"
+      - "bureau assis"
+      - "tapis"
     max_price: null   # budget illimité pour l'instant
-
-  - name: "Carte graphique"
-    keywords: ["rtx 4070", "rtx 4080", "rtx 5070", "rx 7800", "rx 7900", "rx 9070"]
-    exclude: ["portable", "laptop"]
-    max_price: 600
-
-  - name: "Processeur"
-    keywords: ["ryzen 7", "ryzen 9", "core i7", "core i9", "7800x3d", "9800x3d"]
-    exclude: ["portable", "laptop"]
-    max_price: 400
-
-  - name: "SSD / RAM"
-    keywords: ["ssd 2 to", "ssd 2tb", "nvme", "ddr5 32"]
-    exclude: []
-    max_price: 150
