@@ -38,8 +38,12 @@ class DealabsScraper(BaseScraper):
 
     name = "dealabs"
 
-    def __init__(self, feed_url: str):
+    def __init__(self, feed_url: str, label: str | None = None):
         self.feed_url = feed_url
+        # Label de source : permet aux watches de cibler un flux précis
+        # (ex. "dealabs-audio"). L'id du deal garde le préfixe "dealabs"
+        # pour que le dédoublonnage reste global entre les flux.
+        self.label = label or self.name
 
     def fetch_deals(self) -> list[Deal]:
         resp = requests.get(
@@ -68,7 +72,7 @@ class DealabsScraper(BaseScraper):
             deals.append(
                 Deal(
                     id=f"{self.name}:{entry.get('id', link)}",
-                    source=self.name,
+                    source=self.label,
                     title=title,
                     url=link,
                     price=_parse_price(searchable),

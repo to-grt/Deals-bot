@@ -4,8 +4,10 @@ from pc_deals_bot.models import Deal
 from pc_deals_bot.scrapers.dealabs import _parse_price
 
 
-def make_deal(title: str, price: float | None = None) -> Deal:
-    return Deal(id="test:1", source="test", title=title, url="http://x", price=price)
+def make_deal(
+    title: str, price: float | None = None, source: str = "test"
+) -> Deal:
+    return Deal(id="test:1", source=source, title=title, url="http://x", price=price)
 
 
 def test_match_keyword_and_price():
@@ -24,6 +26,24 @@ def test_exclude_keyword():
 def test_unknown_price_still_matches():
     watch = Watch(name="GPU", keywords=["rtx 4070"], max_price=600)
     assert match_watch(make_deal("RTX 4070 en promo", None), watch)
+
+
+def test_min_price():
+    watch = Watch(name="Casque", keywords=["casque"], min_price=50, max_price=400)
+    assert match_watch(make_deal("Casque HyperX Cloud III", 89.0), watch)
+    assert not match_watch(make_deal("Casque filaire basique", 19.99), watch)
+    assert not match_watch(make_deal("Casque haut de gamme", 449.0), watch)
+    # Prix non détecté : ne disqualifie pas, même avec un plancher
+    assert match_watch(make_deal("Casque sans prix affiché", None), watch)
+
+
+def test_sources_scoping():
+    watch = Watch(name="Casque", keywords=["casque"], sources=["dealabs-audio"])
+    assert match_watch(make_deal("Casque Logitech", 100.0, source="dealabs-audio"), watch)
+    assert not match_watch(make_deal("Casque Logitech", 100.0, source="dealabs"), watch)
+    # Liste vide = toutes les sources acceptées
+    open_watch = Watch(name="Casque", keywords=["casque"])
+    assert match_watch(make_deal("Casque Logitech", 100.0, source="dealabs"), open_watch)
 
 
 def test_find_matching_watch_returns_first():

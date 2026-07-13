@@ -1,20 +1,33 @@
-# Configuration du bot de veille des bons plans PC.
+# Configuration du bot de veille des bons plans.
 #
 # Chaque entrée de "watches" est une recherche indépendante :
-#   - keywords : au moins un de ces mots doit apparaître dans le titre
-#   - exclude  : aucun de ces mots ne doit apparaître (filtre les portables, etc.)
+#   - keywords  : au moins un de ces mots doit apparaître dans le titre
+#   - exclude   : aucun de ces mots ne doit apparaître (filtre les portables, etc.)
+#   - min_price : prix minimum en euros (null = pas de plancher)
 #   - max_price : prix maximum en euros (null = pas de limite)
+#   - sources   : labels de flux auxquels la recherche se limite (vide = tous)
+#
+# Le routage "recherche -> destinataires Discord" se configure côté LegumBot
+# (DEAL_ROUTES dans TOKEN.py), par nom de watch.
 
 database: data/deals.db
 
 scrapers:
   dealabs:
     enabled: true
+    # Une URL simple a le label par défaut "dealabs" ; la forme
+    # {url, label} donne au flux un label ciblable par les watches.
     feed_urls:
       # Groupe dédié aux PC fixes / configs complètes (source principale)
       - "https://www.dealabs.com/rss/groupe/ordinateurs-de-bureau"
       # Groupe informatique généraliste (filet de sécurité)
       - "https://www.dealabs.com/rss/groupe/informatique"
+      # Casques audio (dont casques gaming vendus comme audio)
+      - url: "https://www.dealabs.com/rss/groupe/casques-audio"
+        label: "dealabs-audio"
+      # Accessoires gaming (casques, mais aussi manettes, claviers…)
+      - url: "https://www.dealabs.com/rss/groupe/accessoires-gaming"
+        label: "dealabs-gaming"
 
 # Canaux de notification. Les ${VAR} sont lues dans les variables
 # d'environnement pour ne pas versionner de secrets.
@@ -34,6 +47,7 @@ notifiers:
 # sinon "Écran PC", "Boîtier PC", etc. matchent aussi.
 watches:
   - name: "Config complète"
+    sources: ["dealabs"]   # uniquement les flux PC, pas l'audio/gaming
     keywords:
       - "pc fixe"
       - "pc gamer"
@@ -61,3 +75,30 @@ watches:
       - "all-in-one"
       - "tout-en-un"
     max_price: null   # budget illimité pour l'instant
+
+  - name: "Casque gaming"
+    # Limité aux flux casques/accessoires : "casque" y suffit comme mot-clé,
+    # et le plancher à 50 € écarte l'entrée de gamme.
+    sources: ["dealabs-audio", "dealabs-gaming"]
+    keywords:
+      - "casque"
+      - "headset"
+    # Écarte ce qui n'est pas un casque-micro posé sur la tête. Les casques
+    # hi-fi purs (Sony, Bose…) peuvent encore passer : on affinera à l'usage.
+    # Correspondance par sous-chaîne : garder des expressions assez longues
+    # ("vr" seul matcherait "livré", "moto" matcherait "Motorola"…).
+    exclude:
+      - "écouteurs"
+      - "earbuds"
+      - "intra-auriculaire"
+      - "intra auriculaire"
+      - "enceinte"
+      - "barre de son"
+      - "casque vr"
+      - "casque moto"
+      - "casque de moto"
+      - "casque vélo"
+      - "casque de ski"
+      - "réalité virtuelle"
+    min_price: 50
+    max_price: 400

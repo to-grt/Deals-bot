@@ -6,6 +6,9 @@ from .models import Deal
 
 def match_watch(deal: Deal, watch: Watch) -> bool:
     """Vrai si le deal correspond aux critères d'une recherche."""
+    if watch.sources and deal.source not in watch.sources:
+        return False
+
     title = deal.title.lower()
 
     if not any(kw in title for kw in watch.keywords):
@@ -14,12 +17,13 @@ def match_watch(deal: Deal, watch: Watch) -> bool:
     if any(kw in title for kw in watch.exclude):
         return False
 
-    if (
-        watch.max_price is not None
-        and deal.price is not None
-        and deal.price > watch.max_price
-    ):
-        return False
+    # Un prix non détecté (None) ne disqualifie jamais : on préfère notifier
+    # un deal sans prix que de le rater.
+    if deal.price is not None:
+        if watch.min_price is not None and deal.price < watch.min_price:
+            return False
+        if watch.max_price is not None and deal.price > watch.max_price:
+            return False
 
     return True
 

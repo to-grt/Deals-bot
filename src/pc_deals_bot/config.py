@@ -9,12 +9,16 @@ import yaml
 
 @dataclass
 class Watch:
-    """Une recherche : mots-clés à inclure/exclure et prix plafond."""
+    """Une recherche : mots-clés à inclure/exclure, fourchette de prix, sources."""
 
     name: str
     keywords: list[str]
     exclude: list[str] = field(default_factory=list)
+    min_price: float | None = None
     max_price: float | None = None
+    # Labels de sources auxquels la recherche se limite (vide = toutes).
+    # Un label correspond au champ "label" d'un flux dans la config scrapers.
+    sources: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -49,7 +53,9 @@ def load_config(path: str | Path = "config.yaml") -> Config:
             name=w["name"],
             keywords=[k.lower() for k in w.get("keywords", [])],
             exclude=[k.lower() for k in w.get("exclude", [])],
+            min_price=w.get("min_price"),
             max_price=w.get("max_price"),
+            sources=list(w.get("sources", [])),
         )
         for w in raw.get("watches", [])
     ]

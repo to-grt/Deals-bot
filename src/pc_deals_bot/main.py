@@ -26,10 +26,16 @@ def run_once(config_path: Path) -> int:
             try:
                 deals = scraper.fetch_deals()
             except Exception:
-                log.exception("Échec du scraper %s", scraper.name)
+                log.exception(
+                    "Échec du scraper %s", getattr(scraper, "label", scraper.name)
+                )
                 continue
 
-            log.info("%s : %d deals récupérés", scraper.name, len(deals))
+            log.info(
+                "%s : %d deals récupérés",
+                getattr(scraper, "label", scraper.name),
+                len(deals),
+            )
 
             for deal in deals:
                 if store.is_seen(deal.id):
