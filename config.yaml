@@ -18,16 +18,18 @@ scrapers:
     # Une URL simple a le label par défaut "dealabs" ; la forme
     # {url, label} donne au flux un label ciblable par les watches.
     feed_urls:
-      # Groupe dédié aux PC fixes / configs complètes (source principale)
-      - "https://www.dealabs.com/rss/groupe/ordinateurs-de-bureau"
-      # Groupe informatique généraliste (filet de sécurité)
-      - "https://www.dealabs.com/rss/groupe/informatique"
-      # Casques audio (dont casques gaming vendus comme audio)
+      - url: "https://www.dealabs.com/rss/groupe/ordinateurs-de-bureau"
+        label: "dealabs-pc"
+      - url: "https://www.dealabs.com/rss/groupe/informatique"
+        label: "dealabs-informatique"
       - url: "https://www.dealabs.com/rss/groupe/casques-audio"
         label: "dealabs-audio"
-      # Accessoires gaming (casques, mais aussi manettes, claviers…)
       - url: "https://www.dealabs.com/rss/groupe/accessoires-gaming"
         label: "dealabs-gaming"
+      - url: "https://www.dealabs.com/rss/groupe/enceintes-bluetooth"
+        label: "dealabs-enceinte"
+      - url: "https://www.dealabs.com/rss/groupe/appareils-photo"
+        label: "dealabs-photo"
 
 # Canaux de notification. Les ${VAR} sont lues dans les variables
 # d'environnement pour ne pas versionner de secrets.
@@ -42,12 +44,9 @@ notifiers:
     bot_token: "${TELEGRAM_BOT_TOKEN}"
     chat_id: "${TELEGRAM_CHAT_ID}"
 
-# NB : la correspondance se fait par sous-chaîne dans le titre.
-# Ne jamais mettre un mot-clé trop court/générique comme "pc" seul,
-# sinon "Écran PC", "Boîtier PC", etc. matchent aussi.
 watches:
   - name: "Config complète"
-    sources: ["dealabs"]   # uniquement les flux PC, pas l'audio/gaming
+    sources: ["dealabs-pc", "dealabs-informatique"]   # uniquement les flux PC, pas l'audio/gaming
     keywords:
       - "pc fixe"
       - "pc gamer"
@@ -60,11 +59,6 @@ watches:
       - "desktop"
       - "tour gamer"
       - "pc tour"
-    # Seules exclusions : les formats qui ne sont pas des tours.
-    # Ne PAS exclure des noms de composants (watercooling, carte graphique…) :
-    # les titres de PC montés énumèrent leurs composants, on rejetterait des
-    # deals valides. Les composants vendus seuls ne matchent de toute façon
-    # aucun mot-clé ci-dessus.
     exclude:
       - "portable"
       - "laptop"
@@ -76,29 +70,56 @@ watches:
       - "tout-en-un"
     max_price: null   # budget illimité pour l'instant
 
-  - name: "Casque gaming"
-    # Limité aux flux casques/accessoires : "casque" y suffit comme mot-clé,
-    # et le plancher à 50 € écarte l'entrée de gamme.
-    sources: ["dealabs-audio", "dealabs-gaming"]
+  - name: "Enceinte portable"
+    sources: ["dealabs-enceinte"]
     keywords:
-      - "casque"
-      - "headset"
-    # Écarte ce qui n'est pas un casque-micro posé sur la tête. Les casques
-    # hi-fi purs (Sony, Bose…) peuvent encore passer : on affinera à l'usage.
-    # Correspondance par sous-chaîne : garder des expressions assez longues
-    # ("vr" seul matcherait "livré", "moto" matcherait "Motorola"…).
+      - "enceinte portable"
     exclude:
-      - "écouteurs"
-      - "earbuds"
-      - "intra-auriculaire"
-      - "intra auriculaire"
-      - "enceinte"
-      - "barre de son"
-      - "casque vr"
-      - "casque moto"
-      - "casque de moto"
-      - "casque vélo"
-      - "casque de ski"
-      - "réalité virtuelle"
+      - "colonne"
+      - "amplificateur"
+    min_price: 80
+    max_price: 170
+
+  - name: "Mémoire RAM"
+    sources: ["dealabs-informatique"]
+    keywords:
+      - "mémoire"
+      - "barrette"
+    exclude:
+      - "carte mémoire"
     min_price: 50
-    max_price: 400
+    max_price: 200
+
+  - name: "Appareil photo"
+    sources: ["dealabs-photo"]
+    keywords:
+      - "appareil photo"
+      - "reflex"
+      - "hybride"
+      - "bridge"
+      - "compact"
+      - "instantané"
+      - "instax"
+      - "polaroid"
+      - "kodak"
+      - "canon"
+      - "nikon"
+      - "sony"
+      - "fujifilm"
+      - "fuji"
+      - "lumix"
+      - "panasonic"
+      - "olympus"
+      - "leica"
+      - "pentax"
+      - "gopro"
+    exclude:
+      - "objectif"
+      - "trépied"
+      - "carte mémoire"
+      - "sacoche"
+      - "batterie"
+      - "chargeur"
+      - "flash"
+    min_price: 50
+    max_price: 200
