@@ -1,7 +1,5 @@
 # PC Deals Bot
 
-> 🤖 Projet *vibe codé* avec [Claude Code](https://claude.com/claude-code).
-
 Bot de veille qui surveille régulièrement les sites de bons plans (Dealabs pour
 commencer) afin de dénicher les bonnes affaires sur les **PC fixes et composants
 performants** — GPU, CPU, RAM, SSD, configs complètes — à prix raisonnable.
@@ -149,3 +147,6 @@ pytest
 - Privilégier les flux RSS / API officielles quand ils existent.
 - Respecter les `robots.txt` et espacer les requêtes (30 min par défaut).
 - User-Agent identifiable, pas de parallélisation agressive.
+
+
+> Projet réalisé avec [Claude Code](https://claude.com/claude-code).
