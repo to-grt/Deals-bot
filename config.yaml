@@ -6,6 +6,8 @@
 #   - min_price : prix minimum en euros (null = pas de plancher)
 #   - max_price : prix maximum en euros (null = pas de limite)
 #   - sources   : labels de flux auxquels la recherche se limite (vide = tous)
+#   - require   : groupes de mots-clés TOUS obligatoires (au moins un mot de
+#                 chaque groupe doit apparaître) — pour cumuler des critères
 #
 # Le routage "recherche -> destinataires Discord" se configure côté LegumBot
 # (DEAL_ROUTES dans TOKEN.py), par nom de watch.
@@ -30,6 +32,8 @@ scrapers:
         label: "dealabs-enceinte"
       - url: "https://www.dealabs.com/rss/groupe/appareils-photo"
         label: "dealabs-photo"
+      - url: "https://www.dealabs.com/rss/groupe/ecrans"
+        label: "dealabs-ecrans"
 
 # Canaux de notification. Les ${VAR} sont lues dans les variables
 # d'environnement pour ne pas versionner de secrets.
@@ -123,3 +127,20 @@ watches:
       - "flash"
     min_price: 50
     max_price: 200
+
+  - name: "Écran QD-OLED 4K"
+    # 27" / 4K UHD (3840x2160, donc 16:9) / QD-OLED / 240 Hz minimum.
+    # Les 27" 4K QD-OLED 240 Hz sont tous des dalles récentes (2025+).
+    sources: ["dealabs-ecrans"]
+    keywords:
+      - "qd-oled"
+      - "qd oled"
+      - "qdoled"
+    require:
+      # Taille : 27" (les dalles 26,5" sont vendues comme des 27")
+      - ['27"', "27''", "27“", "27”", "27 pouces", "26,5", "26.5"]
+      # Résolution 4K UHD
+      - ["4k", "uhd", "ultra hd", "2160", "3840"]
+      # Fréquence : 240 Hz (en 4K 27", rien ne monte plus haut aujourd'hui)
+      - ["240hz", "240 hz"]
+    max_price: null

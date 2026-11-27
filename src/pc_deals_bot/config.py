@@ -19,6 +19,9 @@ class Watch:
     # Labels de sources auxquels la recherche se limite (vide = toutes).
     # Un label correspond au champ "label" d'un flux dans la config scrapers.
     sources: list[str] = field(default_factory=list)
+    # Groupes de mots-clés tous obligatoires (ET entre groupes, OU dans un
+    # groupe) : sert aux critères cumulés (taille ET résolution ET…).
+    require: list[list[str]] = field(default_factory=list)
 
 
 @dataclass
@@ -56,6 +59,7 @@ def load_config(path: str | Path = "config.yaml") -> Config:
             min_price=w.get("min_price"),
             max_price=w.get("max_price"),
             sources=list(w.get("sources", [])),
+            require=[[k.lower() for k in group] for group in w.get("require", [])],
         )
         for w in raw.get("watches", [])
     ]

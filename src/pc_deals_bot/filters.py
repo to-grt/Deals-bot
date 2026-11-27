@@ -14,6 +14,9 @@ def match_watch(deal: Deal, watch: Watch) -> bool:
     if not any(kw in title for kw in watch.keywords):
         return False
 
+    if not all(any(kw in title for kw in group) for group in watch.require):
+        return False
+
     if any(kw in title for kw in watch.exclude):
         return False
 

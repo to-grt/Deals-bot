@@ -46,6 +46,22 @@ def test_sources_scoping():
     assert match_watch(make_deal("Casque Logitech", 100.0, source="dealabs"), open_watch)
 
 
+def test_require_groups_all_mandatory():
+    watch = Watch(
+        name="Écran",
+        keywords=["qd-oled"],
+        require=[['27"', "26,5"], ["4k", "uhd"], ["240hz", "240 hz"]],
+    )
+    assert match_watch(make_deal('Écran PC 27" MSI QD-OLED 4K 240Hz'), watch)
+    assert match_watch(
+        make_deal('Écran PC 26,5" MSI Mag 272UP - QD-OLED, Ultra HD 4K, 240 Hz'), watch
+    )
+    # Un seul groupe manquant suffit à rejeter
+    assert not match_watch(make_deal('Écran 27" QD-OLED QHD 240 Hz'), watch)
+    assert not match_watch(make_deal('Écran 32" QD-OLED 4K 240 Hz'), watch)
+    assert not match_watch(make_deal('Écran 27" QD-OLED 4K 165 Hz'), watch)
+
+
 def test_find_matching_watch_returns_first():
     watches = [
         Watch(name="GPU", keywords=["rtx"]),
