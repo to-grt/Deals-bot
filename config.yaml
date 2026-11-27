@@ -72,6 +72,7 @@ watches:
       - "mini-pc"
       - "all-in-one"
       - "tout-en-un"
+      - "écran"
     max_price: null   # budget illimité pour l'instant
 
   - name: "Enceinte portable"
@@ -83,16 +84,6 @@ watches:
       - "amplificateur"
     min_price: 80
     max_price: 170
-
-  - name: "Mémoire RAM"
-    sources: ["dealabs-informatique"]
-    keywords:
-      - "mémoire"
-      - "barrette"
-    exclude:
-      - "carte mémoire"
-    min_price: 50
-    max_price: 200
 
   - name: "Appareil photo"
     sources: ["dealabs-photo"]
